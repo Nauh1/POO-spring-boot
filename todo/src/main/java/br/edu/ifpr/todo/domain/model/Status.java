@@ -1,5 +1,4 @@
-package main.java.com.example.demo;
-
+package br.edu.ifpr.todo.domain.model;
 
 public enum Status {
     A_FAZER,
