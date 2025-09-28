@@ -1,0 +1,13 @@
+create database todo_db;
+
+use todo_db;
+
+CREATE USER 'user'@'localhost' IDENTIFIED BY 'userSenha';
+
+GRANT ALL PRIVILEGES ON todo_db.* TO 'user'@'localhost';
+
+FLUSH PRIVILEGES;
+
+USE todo_db;
+SHOW TABLES;
+SELECT * FROM tarefa;
