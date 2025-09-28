@@ -51,4 +51,71 @@ public class TarefaController {
                 salvo.getDataEntrega(),
                 salvo.getImportante());
     }
+
+    @GetMapping
+    public List<TarefaResponse> listarTodas() {
+        return service.listarTodas().stream()
+                .map(t -> new TarefaResponse(
+                        t.getId(),
+                        t.getNome(),
+                        t.getDescricao(),
+                        t.getStatus(),
+                        t.getDataCriacao(),
+                        t.getDataEntrega(),
+                        t.getImportante()))
+                .toList();
+    }
+
+    @PutMapping("/{id}")
+    public TarefaResponse atualizar(
+            @PathVariable Long id,
+            @Valid @RequestBody TarefaRequest dto) {
+        Tarefa atualizado = service.atualizar(id, dto);
+
+        return new TarefaResponse(
+                atualizado.getId(),
+                atualizado.getNome(),
+                atualizado.getDescricao(),
+                atualizado.getStatus(),
+                atualizado.getDataCriacao(),
+                atualizado.getDataEntrega(),
+                atualizado.getImportante());
+    }
+
+    @PatchMapping("/{id}/status")
+    public TarefaResponse atualizarStatus(
+            @PathVariable Long id,
+            @RequestParam Status status) {
+        Tarefa atualizado = service.atualizarStatus(id, status);
+        return new TarefaResponse(
+                atualizado.getId(),
+                atualizado.getNome(),
+                atualizado.getDescricao(),
+                atualizado.getStatus(),
+                atualizado.getDataCriacao(),
+                atualizado.getDataEntrega(),
+                atualizado.getImportante());
+    }
+
+    @PatchMapping("/{id}/importante")
+    public TarefaResponse marcarImportante(
+            @PathVariable Long id,
+            @RequestParam boolean importante) {
+        Tarefa atualizado = service.marcarImportante(id, importante);
+        return new TarefaResponse(
+                atualizado.getId(),
+                atualizado.getNome(),
+                atualizado.getDescricao(),
+                atualizado.getStatus(),
+                atualizado.getDataCriacao(),
+                atualizado.getDataEntrega(),
+                atualizado.getImportante());
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void remover(@PathVariable Long id) {
+        service.remover(id);
+    }
+
 }

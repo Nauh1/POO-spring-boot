@@ -58,4 +58,15 @@ public class TarefaRequest {
     public void setImportante(Boolean importante) {
         this.importante = importante;
     }
+
+    @Override
+    public String toString() {
+        return "TarefaRequest{" +
+                "nome='" + nome + '\'' +
+                ", descricao='" + descricao + '\'' +
+                ", status=" + status +
+                ", importante=" + importante +
+                ", dataEntrega=" + dataEntrega +
+                '}';
+    }
 }

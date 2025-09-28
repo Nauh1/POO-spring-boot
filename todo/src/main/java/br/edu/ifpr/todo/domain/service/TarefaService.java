@@ -38,6 +38,10 @@ public class TarefaService {
         return repo.findAll();
     }
 
+    public List<Tarefa> listarTodas() {
+        return repo.findAll();
+    }
+
     public Tarefa buscarPorId(Long id) {
         return repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tarefa id=" + id + " não encontrada"));
