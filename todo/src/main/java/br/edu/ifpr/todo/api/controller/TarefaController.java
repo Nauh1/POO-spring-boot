@@ -5,14 +5,12 @@ import br.edu.ifpr.todo.api.dto.TarefaResponse;
 import br.edu.ifpr.todo.domain.model.Tarefa;
 import br.edu.ifpr.todo.domain.model.Status;
 import br.edu.ifpr.todo.domain.service.TarefaService;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/tarefas")
+@RequestMapping("/api/tarefas")
 // @CrossOrigin(origins = "*") // Libere se for consumir de um front rodando em
 // outra origem
 public class TarefaController {
@@ -25,22 +23,9 @@ public class TarefaController {
     // http://localhost:8080/tarefas/add?nome=Teste&descricao=Primeira%20tarefa&impor
     // tante=true&status=FAZENDO&dataEntrega=2025-09-20
 
-    @GetMapping("/add")
+    @PostMapping("/add")
     @ResponseStatus(HttpStatus.CREATED)
-    public TarefaResponse criarViaGet(
-            @RequestParam String nome,
-            @RequestParam(required = false) String descricao,
-            @RequestParam(required = false, defaultValue = "A_FAZER") Status status,
-            @RequestParam(required = false) Boolean importante,
-            @RequestParam(required = false) String dataEntrega) {
-        var dto = new TarefaRequest();
-        dto.setNome(nome);
-        dto.setDescricao(descricao);
-        dto.setStatus(status);
-        dto.setImportante(importante);
-        if (dataEntrega != null && !dataEntrega.isBlank()) {
-            dto.setDataEntrega(LocalDate.parse(dataEntrega)); // yyyy-MM-dd
-        }
+    public TarefaResponse criar(@RequestBody TarefaRequest dto) {
         Tarefa salvo = service.criar(dto);
         return new TarefaResponse(
                 salvo.getId(),
@@ -53,8 +38,11 @@ public class TarefaController {
     }
 
     @GetMapping
-    public List<TarefaResponse> listarTodas() {
-        return service.listarTodas().stream()
+    public List<TarefaResponse> listar(
+            @RequestParam(required = false) Status status,
+            @RequestParam(required = false) Boolean importante) {
+        List<Tarefa> tarefas = service.listar(null, status, importante);
+        return tarefas.stream()
                 .map(t -> new TarefaResponse(
                         t.getId(),
                         t.getNome(),
@@ -66,50 +54,30 @@ public class TarefaController {
                 .toList();
     }
 
-    @PutMapping("/{id}")
-    public TarefaResponse atualizar(
-            @PathVariable Long id,
-            @Valid @RequestBody TarefaRequest dto) {
-        Tarefa atualizado = service.atualizar(id, dto);
-
+    @GetMapping("/{id}")
+    public TarefaResponse burcarPorId(@PathVariable Long id) {
+        Tarefa tarefa = service.buscarPorId(id);
         return new TarefaResponse(
-                atualizado.getId(),
-                atualizado.getNome(),
-                atualizado.getDescricao(),
-                atualizado.getStatus(),
-                atualizado.getDataCriacao(),
-                atualizado.getDataEntrega(),
-                atualizado.getImportante());
+                tarefa.getId(),
+                tarefa.getNome(),
+                tarefa.getDescricao(),
+                tarefa.getStatus(),
+                tarefa.getDataCriacao(),
+                tarefa.getDataEntrega(),
+                tarefa.getImportante());
     }
 
-    @PatchMapping("/{id}/status")
-    public TarefaResponse atualizarStatus(
-            @PathVariable Long id,
-            @RequestParam Status status) {
-        Tarefa atualizado = service.atualizarStatus(id, status);
+    @PatchMapping("/{id}")
+    public TarefaResponse atualizarParcial(@PathVariable Long id,@RequestBody TarefaRequest dto) {
+        Tarefa atualizada = service.atualizarParcial(id, dto);
         return new TarefaResponse(
-                atualizado.getId(),
-                atualizado.getNome(),
-                atualizado.getDescricao(),
-                atualizado.getStatus(),
-                atualizado.getDataCriacao(),
-                atualizado.getDataEntrega(),
-                atualizado.getImportante());
-    }
-
-    @PatchMapping("/{id}/importante")
-    public TarefaResponse marcarImportante(
-            @PathVariable Long id,
-            @RequestParam boolean importante) {
-        Tarefa atualizado = service.marcarImportante(id, importante);
-        return new TarefaResponse(
-                atualizado.getId(),
-                atualizado.getNome(),
-                atualizado.getDescricao(),
-                atualizado.getStatus(),
-                atualizado.getDataCriacao(),
-                atualizado.getDataEntrega(),
-                atualizado.getImportante());
+                atualizada.getId(),
+                atualizada.getNome(),
+                atualizada.getDescricao(),
+                atualizada.getStatus(),
+                atualizada.getDataCriacao(),
+                atualizada.getDataEntrega(),
+                atualizada.getImportante());
     }
 
     @DeleteMapping("/{id}")

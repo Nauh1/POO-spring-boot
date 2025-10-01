@@ -18,7 +18,7 @@ public class TarefaService {
         this.repo = repo;
     }
 
-    public List<Tarefa> listar(String q, Status status, Boolean importante, LocalDate ate) {
+    public List<Tarefa> listar(String q, Status status, Boolean importante) {
         // Filtro simples combinando alguns critérios básicos
         if (q != null && !q.isBlank()) {
             return repo.findByNomeContainingIgnoreCase(q);
@@ -31,9 +31,6 @@ public class TarefaService {
         }
         if (Boolean.TRUE.equals(importante)) {
             return repo.findByImportanteTrue();
-        }
-        if (ate != null) {
-            return repo.findByDataEntregaBefore(ate.plusDays(1));
         }
         return repo.findAll();
     }
@@ -53,35 +50,32 @@ public class TarefaService {
         t.setNome(dto.getNome());
         t.setDescricao(dto.getDescricao());
         t.setStatus(dto.getStatus() != null ? dto.getStatus() : Status.A_FAZER);
+        t.setDataCriacao(LocalDate.now());
         t.setDataEntrega(dto.getDataEntrega());
         t.setImportante(dto.getImportante() != null ? dto.getImportante() : false);
         return repo.save(t);
     }
-
+    
     @Transactional
-    public Tarefa atualizar(Long id, TarefaRequest dto) {
+    public Tarefa atualizarParcial(Long id, TarefaRequest dto) {
         Tarefa t = buscarPorId(id);
-        t.setNome(dto.getNome());
-        t.setDescricao(dto.getDescricao());
-        if (dto.getStatus() != null)
+
+        if (dto.getNome() != null && !dto.getNome().isBlank()) {
+            t.setNome(dto.getNome());
+        }
+        if (dto.getDescricao() != null) {
+            t.setDescricao(dto.getDescricao());
+        }
+        if (dto.getStatus() != null) {
             t.setStatus(dto.getStatus());
-        t.setDataEntrega(dto.getDataEntrega());
-        if (dto.getImportante() != null)
+        }
+        if (dto.getDataEntrega() != null) {
+            t.setDataEntrega(dto.getDataEntrega());
+        }
+        if (dto.getImportante() != null) {
             t.setImportante(dto.getImportante());
-        return repo.save(t);
-    }
+        }
 
-    @Transactional
-    public Tarefa atualizarStatus(Long id, Status novoStatus) {
-        Tarefa t = buscarPorId(id);
-        t.setStatus(novoStatus);
-        return repo.save(t);
-    }
-
-    @Transactional
-    public Tarefa marcarImportante(Long id, boolean importante) {
-        Tarefa t = buscarPorId(id);
-        t.setImportante(importante);
         return repo.save(t);
     }
 

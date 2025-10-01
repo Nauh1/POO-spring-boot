@@ -11,3 +11,14 @@ FLUSH PRIVILEGES;
 USE todo_db;
 SHOW TABLES;
 SELECT * FROM tarefa;
+
+
+JSON para add:
+{
+  "nome": "teste",
+  "descricao": "tarefa de teste",
+  "status": "FAZENDO",
+  "dataCriacao": "2025-09-30",
+  "dataEntrega": "2025-10-01",
+  "importante": false
+}
